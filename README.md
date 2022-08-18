@@ -10,19 +10,56 @@ For the inferred Slingshot and Palantir trajectories the pipeline uses two diffe
 Setup the pipeline:
 1. Open terminal
 2. Clone the repository to your computer
+```
+git clone https://github.com/ernohanninen/trajectory_inference_pipeline.git
+```
 3. Navigate to the pipeline environments directory
-4. Setup the conda environments
-5. Navigate back to the pipeline directory
-6. Open the pipeline.config file in a text editor. See details from pipeline.config file section, how to fill in the pipeline.config file.
+```
+cd trajectory_inference_pipeline/environments/
+```
+4. Setup the conda environment for R scripts
+```
+conda env create -f Renv.yml
+```
+5. Setup the conda environment for Python scripts
+```
+conda env create -f PYenv.yml
+```
+6. Navigate back to the trajectory_inference_pipeline directory
+```
+cd ..
+```
+7. Open the pipeline.config file in a text editor. See details from the "Update configuration file" -section, how to fill in the pipeline.config file.
 ```
 nano pipeline.config
 ```
-7. Run the pipeline
+8. Run the pipeline
 ```
 nextflow main.nf -c pipeline.config
 ```
 
 The results of the analysis are stored in a user specified output file. 
+
+## Update configuration file
+Before every analysis the configuration file (pipeline.config) needs to be updated. The pipeline.config file controls which scripts are executed during the analysis. 
+ - params.input_data: Submit a h5ad file. See below the requirements for the input h5ad file.
+ - params.dataset: dataset name, this information is used to neame the output directory.
+ - params.output_folder: folder where the output is stored.
+ - params.skip_slingshot: if false the Slingshot trajectory inference method is executed.
+ - params.skip_palantir: if false the Palantir trajectory inference method is executed.
+ - params.skip_paga: if false PAGA the trajectory inference method is executed.
+ - params.slingshot_start_cluster: the cluster where the slingshot trajectory origins.
+ - params.slingshot_extend_value: specifies the method how to handle root and leaf clusters when constructing the slingshot trajectory curves. Possible values: "y", "n" and "pc1". More information see extend from: https://rdrr.io/github/kstreet13/slingshot/man/slingParams.html
+ - params.sligshot_clusters: clusters to use to construct and visualize the slingshot trajectory. These should be clusters from the h5ad data.
+ - params.palantir_start_cell: Start cell for the Palantir trajectories.
+ - params.palantir_clusters: clusters to be used to visualize the Palantir results. These should be clusters from the h5ad data.
+ - params.skip_tradeSeq: if skip_slingshot is false and skip_tradeSeq is false the script which runs fitGAM and associationTest functions from tradeSeq package is executed.
+- params.skip_gsea = if skip_palantir and skip_gsea is false, GSEA analysis is performad for Palantir lineages. If skip_slingshot, skip_tradeSeq and skip_gsea is false GSEA analysis is performed for Slingshot trajectories.
+- params.skip_enrichr = if skip_palantir and skip_enrichr is false, Enrichr analysis is performad for Palantir lineages. If skip_slingshot, skip_tradeSeq and skip_enrichr is false Enrichr analysis is performed for Slingshot trajectories.
+- params.gene_set: specifies the gene set to be used in the analysis. The gene sets, should be loded in gene_sets folder.
+- params.ernichr_num_genes: specifies the number of most associated genes to run the Enrichr with.
+
+  
 
 ## Description of the pipeline output
 #### Slingshot and tradeSeq

@@ -59,12 +59,36 @@ Before every analysis the configuration file (pipeline.config) needs to be updat
 - params.gene_set: specifies the gene set to be used in the analysis. The gene sets, should be loded in gene_sets folder.
 - params.ernichr_num_genes: specifies the number of most associated genes to run the Enrichr with.
 
-  
+## Requirements for h5ad input file
+- Anndata (adata) object with variable features in adata.var.
+- adata.raw contains the raw counts.
+- adata.var.index should return a list of variable genes.
+- The input data needs to be dimensionality reduced (PCA and UMAP) so that in adata.obsm there is column named X_pca and X_umap.
+- The input data needs to be clustered so that in adata.obs there is a column for cluster(s). Use on of these clusters in pipeline.config file as an argument for params.sligshot_clusters or params.slingshot_clusters.
+- The adata should have neigbourhood graph computed.
 
-## Description of the pipeline output
+## Description of the pipeline output files
 #### Slingshot and tradeSeq
-run_slingshot.R script returns AnnData.h5Seurat, genes.txt, Rplots.pdf and dataset_slingshot_results.rds. AnnData.h5Seurat contains file with seurat object, which is converted from h5ad file. genes.txt file contains the variable genes. Rplots.pdf contains the trajectories plotted in a UMAP. One plot colored by user specified clusters and the other plot colored by pseudotime. {dataset}_slingshot_results.rds contains the result from slingshot function.
+- AnnData.h5Seurat contains file with seurat object, which is converted from h5ad file. 
+- genes.txt file contains the variable genes. (adata.var.index)
+- Rplots.pdf contains the trajectories plotted in a UMAP. One plot colored by user specified clusters and the other plot colored by pseudotime.
+-  {dataset}_slingshot_results.rds contains the result from slingshot function.
 
 run_tradeSeq.r script returns
-{dataset}_fitGam.rds contains the output from the fitGAM function. 
-{dataset}_associationTest_lineage_{num}.csv contains the results from associationTest
+- {dataset}_fitGam.rds contains the output from the fitGAM function. 
+- {dataset}_associationTest_lineage_{num}.csv: contains the results from associationTest.
+- {dataset}_geneList_lineage_{num}.txt: contains the top lineage associated and significant genes for Enrichr.
+- {dataset}_ranked_lineage_{num}.rnk: contains all the genes from assiciationTest (genes with NA values have been filtered), even the non-significant, gene with highest Wald stat value is an top of the list. This is a ranked list for GSEA.
+
+#### Palantir and Spearman correlation
+Palantir returns
+- Figures of diffusion components, trajectories, start cell and terminal state
+
+Spearman correlation returns
+- correlation_{dataset}_lineage_{num}.csv: correlation table from spearman correlation. Gene with highest correlation is first.
+- {dataset}_geneList_lineage_{num}.txt: Contains the top lineage correlating and significant genes for Enrichr.
+- {dataset}_ranked_lineage_{num}.rnk: contains all the genes from Spearman correlation, even the non-significant, gene with highest correlation value is an top of the list. This is a ranked list for GSEA.
+
+#### GSEA and Enrichr
+- GSEA outputs GSEA plots
+- Enrihcr outputs Enrichment plots

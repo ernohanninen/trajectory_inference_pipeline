@@ -29,7 +29,7 @@ conda env create -f PYenv.yml
 ```
 cd ..
 ```
-7. Open the pipeline.config file in a text editor. See details from the "Update configuration file" -section, how to fill in the pipeline.config file.
+7. Open the pipeline.config file in a text editor. See details from the "Update configuration file" -section, how to update the pipeline.config file.
 ```
 nano pipeline.config
 ```
@@ -69,7 +69,7 @@ Before every analysis the configuration file (pipeline.config) needs to be updat
 
 ## Description of the pipeline output files
 #### Slingshot and tradeSeq
-run_slingshot.R
+run_slingshot.R script returns
 - AnnData.h5Seurat contains file with seurat object, which is converted from h5ad file. 
 - genes.txt file contains the variable genes. (adata.var.index)
 - Rplots.pdf contains the trajectories plotted in a UMAP. One plot colored by user specified clusters and the other plot colored by pseudotime.
@@ -82,7 +82,7 @@ run_tradeSeq.R script returns
 - {dataset}_ranked_lineage_{num}.rnk: contains all the genes from assiciationTest (genes with NA values have been filtered), even the non-significant, gene with highest Wald stat value is an top of the list. This is a ranked list for GSEA.
 
 #### Palantir and Spearman correlation
-run_palantir.py
+run_palantir.py script returns
 - Figures of diffusion components, trajectories, start cell and terminal state
 - correlation_{dataset}_lineage_{num}.csv: correlation table from spearman correlation. Gene with highest correlation is first.
 - {dataset}_geneList_lineage_{num}.txt: Contains the top lineage correlating and significant genes for Enrichr.

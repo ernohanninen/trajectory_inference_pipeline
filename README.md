@@ -8,32 +8,32 @@ For the inferred Slingshot and Palantir trajectories the pipeline uses two diffe
 
 ## Usage of the pipeline
 Setup the pipeline:
-1. Open terminal
-2. Clone the repository to your computer
+1. Open terminal:
+2. Clone the repository to your computer:
 ```
 git clone https://github.com/ernohanninen/trajectory_inference_pipeline.git
 ```
-3. Navigate to the pipeline environments directory
+3. Navigate to the pipeline environments directory:
 ```
 cd trajectory_inference_pipeline/environments/
 ```
-4. Setup the conda environment for R scripts
+4. Setup the conda environment for R scripts:
 ```
 conda env create -f Renv.yml
 ```
-5. Setup the conda environment for Python scripts
+5. Setup the conda environment for Python scripts:
 ```
 conda env create -f PYenv.yml
 ```
-6. Navigate back to the trajectory_inference_pipeline directory
+6. Navigate back to the trajectory_inference_pipeline directory:
 ```
 cd ..
 ```
-7. Open the pipeline.config file in a text editor. See details from the "Update configuration file" -section, how to update the pipeline.config file.
+7. Open the pipeline.config file in a text editor. See details from the "Update configuration file" -section, how to update the pipeline.config file:
 ```
 nano pipeline.config
 ```
-8. Run the pipeline
+8. Run the pipeline:
 ```
 nextflow main.nf -c pipeline.config
 ```

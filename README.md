@@ -29,11 +29,15 @@ conda env create -p ./PYenv -f PYenv.yml
 ```
 cd ..
 ```
-7. Open the pipeline.config file in a text editor. See details from the "Update configuration file" -section, how to update the pipeline.config file:
+7. Create directory where to store the input data
+```
+mkdir data
+```
+8. Open the pipeline.config file in a text editor. See details from the "Update configuration file" -section, how to update the pipeline.config file:
 ```
 nano pipeline.config
 ```
-8. Run the pipeline:
+9. Run the pipeline:
 ```
 nextflow main.nf -c pipeline.config
 ```

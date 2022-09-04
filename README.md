@@ -1,10 +1,10 @@
 # Pipeline for identifying the underlying biological processes of the inferred trajectory
-This is a trajectory inference pipeline, which first constructs a trajectory with either Palantir or Slingshot, then identifies the genes associated to each inferred trajectory lineage, and finally runs GSEA and Enrichr to the lineage associated genes. 
+This is a trajectory inference pipeline, which first constructs a trajectory with either Palantir or Slingshot, then identifies the genes associated with each inferred trajectory lineage, and finally runs GSEA and Enrichr to the lineage-associated genes. 
 
 ## Description of the pipeline
-The pipeline is a nextflow (21.10.6) based pipeline that combines scripts written in R (4.1.3) and Python (3.8.13). The trajectory inference methods of the pipeline are chosen based on a comparison study of different trajectory methods. Slingshot (R package, 2.2.0), Palantir (Python package, 1.0.1), Paga from Scanpy (Python package, 1.9.1)  and Monocle3 (R package, 1.0.0) trajectory methods was compared to see, which of these works best with the used data. Out of the methods Slingshot, Palantir and Paga was included to this pipeline, but the downstream analysis in the pipeline is limited only for the trajectories inferred from Slingshot and Palantir methods. The data we used in this study didn’t have developmental trajectories, instead with trajectory inference methods we were looking for continuous cell states.
+The pipeline is a Nextflow (21.10.6) based pipeline that combines scripts written in R (4.1.3) and Python (3.8.13). The trajectory inference methods of the pipeline were chosen based on a comparison study of different trajectory methods. Slingshot (R package, 2.2.0), Palantir (Python package, 1.1.0), Paga from Scanpy (Python package, 1.9.1), and Monocle3 (R package, 1.0.0) trajectory methods was compared to see, which of these works best with the data used. Out of the methods Slingshot, Palantir and Paga were included in this pipeline, but the downstream analysis in the pipeline is limited only to the trajectories inferred from Slingshot and Palantir methods. The data I used in this study didn’t have developmental trajectories, instead with trajectory inference methods I was trying to identify continuous cell states.
 
-For the inferred Slingshot and Palantir trajectories the pipeline uses two different approaches to identify the genes associated to a particular trajectory lineage. For the inferred Slingshot trajectory, associationTest function from tradeSeq (R package, 1.8.0) is used to identify the genes associated to the trajectory lineage. For the inferred Palantir trajectory, spearmanr function from  scipy (Python package, 1.8.1) is used to run Spearman correlation to identify the genes that correlates with the trajectory lineage. To identify the biological processes underlying the trajectory lineage the pipeline contains scripts for GSEA and Enrichr analysis from gseapy (Python package, 0.10.8). 
+For the inferred Slingshot and Palantir trajectories, the pipeline uses two different approaches to identify the genes associated with a particular trajectory lineage. For the inferred Slingshot trajectory, associationTest function from tradeSeq (R package, 1.8.0) is used to identify the genes associated with a trajectory lineage. For the inferred Palantir trajectory, spearmanr function from  scipy (Python package, 1.8.1) is used to run Spearman correlation to identify the genes that correlate with a trajectory lineage. To identify the biological processes underlying the lineage the pipeline contains scripts for GSEA and Enrichr analysis from gseapy (Python package, 0.10.8). 
 
 ## Usage of the pipeline
 Setup the pipeline:
@@ -50,14 +50,21 @@ Before every analysis the configuration file (pipeline.config) needs to be updat
  - params.skip_paga: if false PAGA trajectory inference method is executed.
  - params.slingshot_start_cluster: the cluster where the slingshot trajectory origins.
  - params.slingshot_extend_value: specifies the method how to handle the root and leaf clusters when constructing the Slingshot trajectory curves. Possible values: "y", "n" and "pc1". More information see "extend" from: https://rdrr.io/github/kstreet13/slingshot/man/slingParams.html
- - params.sligshot_clusters: clusters to be used to construct and visualize the Slingshot trajectory. These should be clusters from the h5ad data.
+ - params.sligshot_clusters: clusters to be used to construct and visualize the Slingshot trajectory. These needs to be clusters from the h5ad data.
  - params.palantir_start_cell: Start cell for the Palantir trajectories.
- - params.palantir_clusters: clusters to be used to visualize the Palantir results. These should be clusters from the h5ad data.
+ - params.palantir_clusters: clusters to be used to visualize the Palantir results. These needs to be clusters from the h5ad data.
  - params.skip_tradeSeq: if skip_slingshot is false and skip_tradeSeq is false, the script which runs fitGAM and associationTest functions from tradeSeq package is executed.
-- params.skip_gsea = if skip_palantir and skip_gsea are false, GSEA analysis is performed for Palantir lineages. If skip_slingshot, skip_tradeSeq and skip_gsea are false ,GSEA analysis is performed for Slingshot trajectories.
+- params.skip_gsea = if skip_palantir and skip_gsea are false, GSEA analysis is performed for the Palantir trajectory. If skip_slingshot, skip_tradeSeq and skip_gsea are false, GSEA analysis is performed for the Slingshot trajectory.
 - params.skip_enrichr = if skip_palantir and skip_enrichr are false, Enrichr analysis is performed for Palantir lineages. If skip_slingshot, skip_tradeSeq and skip_enrichr are false, Enrichr analysis is performed for Slingshot trajectories.
 - params.gene_set: specifies the path to the gene set used in the Enrichr. The gene sets, should be loaded in gene_sets folder. See the available gene sets: https://maayanlab.cloud/Enrichr/#libraries
-- params.ernichr_num_genes: specifies the number of most associated significant genes to run the Enrichr with.
+- params.enrichr_num_genes: specifies the number of most associated significant genes to run the Enrichr with.
+- params.skip_diffusion_comp_correlation: if skip_palantir and skip_diffusion_comp_correlation are false spearman correlation is exectued to the diffusion components. In addition the scripts runs GSEA and Enrichr to the result from the spearman correlation.
+params.diff_comp_gene_set: specifies the path to the gene set used in the Enrichr and GSEA for the genes correlating with diffusion component. The gene sets, should be loaded in gene_sets folder. See the available gene sets: https://maayanlab.cloud/Enrichr/#libraries
+params.enrichr_diff_comp_num_genes: specifies the number of most associated significant genes to run the Enrichr with for the genes correlating with diffusion component.
+
+## Notes of the pipeline
+- Palantir diffusion components are computed with all observations in the data, making the GSEA function for diffusion components computationally demanding. If the dataset is big the GSEA function requires a lot of computational resources. 
+- Even though the tradeSeq fitGAM function is executed only with the variable genes it also requires a lot of computational resources.
 
 ## Requirements for h5ad input file
 - Anndata (adata) object with variable features in adata.var.
@@ -84,6 +91,7 @@ run_tradeSeq.R script returns
 #### Palantir and Spearman correlation
 run_palantir.py script returns
 - Figures of diffusion components, trajectories, start cell and terminal state
+- File for the diffusion components
 - correlation_{dataset}_lineage_{num}.csv: correlation table from spearman correlation. Gene with highest correlation is first.
 - {dataset}_geneList_lineage_{num}.txt: Contains the top lineage correlating significant genes for Enrichr.
 - {dataset}_ranked_lineage_{num}.rnk: contains all the genes from Spearman correlation, even the non-significant. Gene with highest correlation value is an top of the list. This is the ranked list for GSEA.
@@ -91,3 +99,8 @@ run_palantir.py script returns
 #### GSEA and Enrichr
 - run_gsea.py outputs GSEA plots
 - run_enrichr.py outputs Enrichment plots
+
+#### Diffusion component
+run_diffusion_comp_correlation.py script returns
+- spearman correlation results for each diffusion component
+- GSEA and ENRICHR plots

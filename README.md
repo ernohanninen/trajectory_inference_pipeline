@@ -6,7 +6,11 @@ The pipeline is a Nextflow (21.10.6) based pipeline that combines scripts writte
 
 For the inferred Slingshot and Palantir trajectories, the pipeline uses two different approaches to identify the genes associated with a particular trajectory lineage. For the inferred Slingshot trajectory, associationTest function from tradeSeq (R package, 1.8.0) is used to identify the genes associated with a trajectory lineage. For the inferred Palantir trajectory, spearmanr function from  scipy (Python package, 1.8.1) is used to run Spearman correlation to identify the genes that correlate with a trajectory lineage. To identify the biological processes underlying the lineage the pipeline contains scripts for GSEA and Enrichr analysis from gseapy (Python package, 0.10.8). 
 
+The pipeline is developed on Rocky Linux 8.6 and Conda 4.13.0 was used to manage the packages.
+
 ## Usage of the pipeline
+To run the pipeline Conda and Nextflow are required. 
+
 Setup the pipeline:
 1. Open terminal:
 2. Clone the repository to your computer:
@@ -29,7 +33,7 @@ conda env create -p ./PYenv -f PYenv.yml
 ```
 cd ..
 ```
-7. Create directory where to store the input data
+7. Create a directory where to store the input data
 ```
 mkdir data
 ```
